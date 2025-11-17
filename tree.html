@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sims Древа — большое древо</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="big-tree-page">
+  <header class="big-tree-header">
+    <div>
+      <div class="logo">
+        <div class="logo-badge">S</div>
+        Sims Древа
+      </div>
+      <div class="subtitle">большое древо с линиями</div>
+    </div>
+    <div class="big-tree-header-controls">
+      <a class="btn btn-ghost btn-sm" href="index.html">← Назад к списку</a>
+    </div>
+  </header>
+
+  <main class="big-tree-main">
+    <section class="big-tree-controls">
+      <div class="control-group">
+        <label for="rootSelect">Корневой персонаж:</label>
+        <select id="rootSelect" class="form-select"></select>
+      </div>
+      <div class="control-group">
+        <label>
+          <input type="checkbox" id="bigShowAllTrees" checked />
+          Показывать персонажей из всех древ
+        </label>
+      </div>
+      <div class="control-group small">
+        <span class="panel-subtitle">
+          Подсказка: линии строятся по связям «родитель» / «ребёнок» / «партнёр».
+        </span>
+      </div>
+    </section>
+
+    <section class="big-tree-canvas-wrapper">
+      <div id="bigTreeContainer" class="big-tree-canvas">
+        <svg id="bigTreeLines" class="big-tree-svg"></svg>
+        <div id="bigTreeNodes" class="big-tree-nodes"></div>
+      </div>
+      <div id="bigTreeEmpty" class="big-tree-empty hidden">
+        <div class="empty-state">
+          <div class="empty-icon">🌲</div>
+          <div><strong>Пока нет данных для древа.</strong></div>
+          <div style="margin-top:6px;">
+            Добавь персонажей и связи на главной странице <code>index.html</code>,
+            затем выбери корень сверху.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/tree.js"></script>
+</body>
+</html>

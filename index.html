@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sims Древа — конструктор</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-header">
+        <div>
+          <div class="logo">
+            <div class="logo-badge">S</div>
+            Sims Древа
+          </div>
+          <div class="subtitle">генеалогия и связи</div>
+        </div>
+        <button class="btn btn-sm btn-primary" id="addTreeBtn">+ древо</button>
+      </div>
+      <ul class="tree-list" id="treeList"></ul>
+    </div>
+    <div class="sidebar-footer">
+      <div>Хранение данных: <strong>localStorage</strong> этого браузера.</div>
+      <div class="chips-row">
+        <div class="chip">The Sims</div>
+        <div class="chip">Родословные</div>
+        <div class="chip"><a href="tree.html">Генеалогия</a></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button class="btn btn-primary" id="addPersonBtn">+ персонаж</button>
+        <div class="toggle">
+          <input type="checkbox" id="showAllTrees" />
+          <label for="showAllTrees">Показывать персонажей из всех древ</label>
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-ghost btn-sm" id="exportBtn">Экспорт JSON</button>
+        <button class="btn btn-ghost btn-sm" id="importBtn">Импорт JSON</button>
+        <input type="file" id="importFileInput" accept="application/json" class="hidden" />
+      </div>
+    </div>
+
+    <section class="content">
+      <!-- LEFT PANEL: LIST -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span id="currentTreeTitle">Персонажи</span>
+            <span class="panel-subtitle" id="currentTreeSubtitle"></span>
+          </div>
+          <span class="pill" id="statsPill">0 персонажей</span>
+        </div>
+
+        <div class="search-box">
+          <span>Поиск</span>
+          <input type="search" id="searchInput" placeholder="Имя, фамилия..." />
+        </div>
+
+        <div class="person-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Имя</th>
+                <th>Жизнь</th>
+                <th>Локация</th>
+                <th>Древа</th>
+              </tr>
+            </thead>
+            <tbody id="personTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- RIGHT PANEL: DETAIL -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Карточка персонажа</span>
+            <span class="panel-subtitle">Краткое досье, связи и мини-древо</span>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-sm btn-ghost hidden" id="editPersonBtn">Редактировать</button>
+            <button class="btn btn-sm btn-ghost hidden" id="deletePersonBtn">Удалить</button>
+          </div>
+        </div>
+        <div class="detail-body" id="personDetail"></div>
+      </section>
+    </section>
+  </main>
+</div>
+
+<!-- TREE MODAL -->
+<div class="modal-backdrop hidden" id="treeModalBackdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="treeModalTitle">Новое древо</div>
+      <button class="btn-icon" data-close-tree-modal>&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="treeForm">
+        <input type="hidden" id="treeIdInput" />
+        <div class="form-row">
+          <div class="form-label">Название древа</div>
+          <input type="text" id="treeNameInput" class="form-input" placeholder="Например, Династия Гот" required />
+        </div>
+        <div class="form-row">
+          <div class="form-label">Цвет маркера</div>
+          <input type="color" id="treeColorInput" class="form-input" value="#38bdf8" />
+        </div>
+        <div class="form-row">
+          <div class="form-label">Описание (опционально)</div>
+          <textarea id="treeDescriptionInput" class="form-textarea" placeholder="Семья, поколение, правила челленджа..."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <span class="panel-subtitle">Древа помогают разделять разные сейвы/челленджи The Sims.</span>
+      <div>
+        <button class="btn btn-ghost btn-sm" data-close-tree-modal>Отмена</button>
+        <button class="btn btn-primary btn-sm" id="saveTreeBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PERSON MODAL -->
+<div class="modal-backdrop hidden" id="personModalBackdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="personModalTitle">Новый персонаж</div>
+      <button class="btn-icon" data-close-person-modal>&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="personForm">
+        <input type="hidden" id="personIdInput" />
+        <div class="form-grid">
+          <div class="form-row">
+            <div class="form-label">Имя персонажа</div>
+            <input type="text" id="personNameInput" class="form-input" placeholder="Кассандра Гот" required />
+          </div>
+          <div class="form-row">
+            <div class="form-label">Где живёт</div>
+            <input type="text" id="personHomeInput" class="form-input" placeholder="Уиллоу Крик, участок 3" />
+          </div>
+          <div class="form-row">
+            <div class="form-label">Дата рождения</div>
+            <input type="date" id="personBirthInput" class="form-input" />
+          </div>
+          <div class="form-row">
+            <div class="form-label">Дата смерти</div>
+            <input type="date" id="personDeathInput" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Фото (URL)</div>
+          <input type="url" id="personPhotoInput" class="form-input" placeholder="https://... или images/симка.png" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Древа, в которые входит персонаж</div>
+          <div class="tree-checkboxes" id="personTreesContainer"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Ближайшие связи</div>
+          <div class="panel-subtitle">
+            Здесь можно указать родственников и друзей. Связи задаются в одну сторону (от выбранного персонажа).
+          </div>
+          <div class="relations-container" id="relationsContainer"></div>
+          <button type="button" class="btn btn-sm btn-ghost" id="addRelationRowBtn">+ Добавить связь</button>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Заметки</div>
+          <textarea id="personNotesInput" class="form-textarea" placeholder="Челлендж, поколение, особенности, карьера..."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <span class="panel-subtitle">
+        Подсказка: чтобы древа пересекались, добавь одного и того же персонажа сразу в несколько древ.
+      </span>
+      <div>
+        <button class="btn btn-ghost btn-sm" data-close-person-modal>Отмена</button>
+        <button class="btn btn-primary btn-sm" id="savePersonBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
